@@ -31,6 +31,9 @@ export const defaultConfig: ChaosConfig = {
     enabled: true,
     probability: 0.15,
   },
+  severityLabelProbability: 0.3,
+  enthusiasticSummaryProbability: 0.5,
+  requestChangesThreshold: 0.6,
 };
 
 /**
@@ -107,7 +110,6 @@ export class CommentGenerator {
   private detector: PatternDetector;
   private mutationEngine: MutationEngine;
   private contradictionEngine: ContradictionEngine;
-  private generatedComments: ReviewComment[] = [];
 
   constructor(
     config: Partial<ChaosConfig> = {},
@@ -211,7 +213,7 @@ export class CommentGenerator {
     response = this.mutationEngine.applyMutations(response);
 
     // Maybe add severity label
-    if (Math.random() < 0.3) {
+    if (Math.random() < this.config.severityLabelProbability) {
       const actualSeverity = Math.random() < 0.5 ? 'nitpick' : 'suggestion';
       response = this.mutationEngine.addSeverityLabel(
         response,
@@ -252,6 +254,29 @@ export class CommentGenerator {
     }
 
     return options[Math.floor(Math.random() * options.length)];
+  }
+
+  /**
+   * Select appropriate persona for a contradiction comment based on its content
+   */
+  private selectContradictionPersona(commentBody: string): PersonaType {
+    const lower = commentBody.toLowerCase();
+
+    const dismissivePatterns = [
+      'reproduce', 'works', 'environment', 'cache',
+      'version', 'configuration', 'your end'
+    ];
+    const vaguePatterns = [
+      'feels', 'concerns', 'something about', 'not sure', 'uncomfortable'
+    ];
+
+    if (dismissivePatterns.some(p => lower.includes(p))) {
+      return 'works_on_my_machine';
+    }
+    if (vaguePatterns.some(p => lower.includes(p))) {
+      return 'vague_senior';
+    }
+    return 'chaotic_neutral';
   }
 
   /**
@@ -298,13 +323,13 @@ export class CommentGenerator {
     if (this.config.contradictionEnabled && comments.length > 0) {
       const contradiction = this.contradictionEngine.generateContradiction();
       if (contradiction) {
-        // Add contradiction to a random existing comment's line
         const targetComment = comments[Math.floor(Math.random() * comments.length)];
+
         comments.push({
           path: targetComment.path,
           line: targetComment.line,
           body: contradiction.comment,
-          persona: 'chaotic_neutral',
+          persona: this.selectContradictionPersona(contradiction.comment),
           tags: ['contradiction'],
         });
       }
@@ -321,8 +346,8 @@ export class CommentGenerator {
     let style: keyof typeof reviewSummaries;
 
     if (action === 'APPROVE') {
-      // 50% chance of contradictory summary when approving
-      style = Math.random() < 0.5 ? 'enthusiastic' : 'contradictory';
+      // Configurable chance of contradictory summary when approving
+      style = Math.random() < this.config.enthusiasticSummaryProbability ? 'enthusiastic' : 'contradictory';
     } else if (action === 'REQUEST_CHANGES') {
       style = Math.random() < 0.5 ? 'passive_aggressive' : 'deflecting';
     } else {
@@ -356,7 +381,7 @@ export class CommentGenerator {
     } else if (hasBlockers) {
       action = 'REQUEST_CHANGES';
     } else if (commentCount > 5) {
-      action = Math.random() < 0.6 ? 'REQUEST_CHANGES' : 'COMMENT';
+      action = Math.random() < this.config.requestChangesThreshold ? 'REQUEST_CHANGES' : 'COMMENT';
     } else {
       action = Math.random() < 0.5 ? 'APPROVE' : 'COMMENT';
     }
@@ -408,7 +433,6 @@ export class CommentGenerator {
    * Reset state for new review
    */
   reset(): void {
-    this.generatedComments = [];
     this.contradictionEngine.reset();
   }
 }

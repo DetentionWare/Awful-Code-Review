@@ -4,6 +4,7 @@ import { GitHubClient, parseGitHubContext, formatDryRunOutput } from './github';
 import { CommentGenerator, defaultConfig } from './generator';
 import { PatternDetector } from './detector';
 import { ChaosConfig, PersonaType } from './types';
+import { getAllPersonaTypes } from './personas/definitions';
 
 async function run(): Promise<void> {
   try {
@@ -15,10 +16,23 @@ async function run(): Promise<void> {
     const maxComments = parseInt(core.getInput('max-comments') || '15', 10);
     const helpfulRate = parseFloat(core.getInput('helpful-accident-rate') || '0.3');
 
-    // Parse personas if provided
+    // Parse and validate personas if provided
     let enabledPersonas: PersonaType[] | undefined;
     if (personasInput) {
-      enabledPersonas = personasInput.split(',').map(p => p.trim()) as PersonaType[];
+      const parsedPersonas = personasInput.split(',').map(p => p.trim());
+      const validPersonas = getAllPersonaTypes();
+      const invalid = parsedPersonas.filter(p => !validPersonas.includes(p as PersonaType));
+
+      if (invalid.length > 0) {
+        core.warning(`Unknown personas ignored: ${invalid.join(', ')}`);
+      }
+
+      enabledPersonas = parsedPersonas.filter(p => validPersonas.includes(p as PersonaType)) as PersonaType[];
+
+      if (enabledPersonas.length === 0) {
+        core.warning('No valid personas specified, using all personas');
+        enabledPersonas = undefined;
+      }
     }
 
     // Build configuration

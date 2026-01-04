@@ -23,7 +23,12 @@ export type CommentTag =
   | 'pro_functional'
   | 'anti_functional'
   | 'requests_comments'
-  | 'complains_obvious_comments';
+  | 'complains_obvious_comments'
+  | 'suggests_change'
+  | 'reports_bug'
+  | 'security_concern'
+  | 'dismissive'
+  | 'vague_concern';
 
 /**
  * Keywords that help categorize comments
@@ -42,13 +47,18 @@ const tagKeywords: Record<CommentTag, string[]> = {
   approving: ['LGTM', 'looks good', 'approve', 'ship it', '👍'],
   blocking: ['blocker', 'block', 'cannot merge', 'must fix', 'critical'],
   nitpick: ['nit', 'minor', 'small thing', 'style'],
-  critical: ['critical', 'important', 'must', 'blocker', 'security'],
+  critical: ['critical', 'important', 'must', 'blocker', 'security', 'vulnerability', 'bug', 'broken'],
   pro_modern: ['modern', 'latest', 'new', 'cutting edge', 'ES6+', 'async/await'],
   anti_modern: ['legacy', 'proven', 'stable', 'traditional', 'IE11'],
   pro_functional: ['functional', 'immutable', 'pure', 'map/filter/reduce'],
   anti_functional: ['imperative', 'readable', 'loop', 'straightforward'],
   requests_comments: ['add comment', 'needs documentation', 'what does this do'],
   complains_obvious_comments: ['obvious comment', 'self-explanatory', 'comment is redundant'],
+  suggests_change: ['should', 'consider', 'change', 'fix', 'update', 'refactor', 'rewrite', 'use instead'],
+  reports_bug: ['bug', 'broken', 'fails', 'error', 'crash', 'undefined', 'null', 'issue', 'problem'],
+  security_concern: ['security', 'vulnerability', 'attack', 'injection', 'xss', 'sanitize', 'threat'],
+  dismissive: ['works for me', 'can\'t reproduce', 'not a bug', 'as designed', 'won\'t fix'],
+  vague_concern: ['feels wrong', 'concerns me', 'not sure', 'something about this', 'bothers me'],
 };
 
 /**
@@ -65,6 +75,14 @@ export const contradictionRules: ContradictionRule[] = [
   { ifPrevious: 'pro_performance', then: 'anti_performance', probability: 0.35 },
   { ifPrevious: 'pro_types', then: 'anti_types', probability: 0.3 },
   { ifPrevious: 'pro_testing', then: 'anti_testing', probability: 0.3 },
+  // New: dismissive responses to bug reports and suggested changes
+  { ifPrevious: 'reports_bug', then: 'dismissive', probability: 0.45 },
+  { ifPrevious: 'security_concern', then: 'dismissive', probability: 0.35 },
+  { ifPrevious: 'suggests_change', then: 'dismissive', probability: 0.3 },
+  { ifPrevious: 'critical', then: 'dismissive', probability: 0.4 },
+  // Vague senior responds to specific technical concerns
+  { ifPrevious: 'pro_performance', then: 'vague_concern', probability: 0.25 },
+  { ifPrevious: 'pro_abstraction', then: 'vague_concern', probability: 0.25 },
 ];
 
 /**
@@ -122,6 +140,45 @@ const contradictionTemplates: Record<string, string[]> = {
     "Do we really need tests for this? It's pretty straightforward.",
     "This seems over-tested.",
     "Manual testing should be sufficient here.",
+  ],
+  dismissive: [
+    "Works on my machine.",
+    "Can't reproduce.",
+    "Have you tried clearing your cache?",
+    "What version of Node are you on?",
+    "This works fine in Chrome.",
+    "I tested this locally, it's fine.",
+    "Are you sure you pulled the latest?",
+    "Did you restart the server?",
+    "That's an edge case we don't need to handle.",
+    "This is by design.",
+    "Not a bug, working as intended.",
+    "Have you tried turning it off and on again?",
+    "This is a user error.",
+    "Can you provide more details? I can't help with this.",
+    "I don't see how this is possible.",
+    "Must be a configuration issue on your end.",
+    "This has never been reported before.",
+    "I've never seen this happen in production.",
+    "Sounds like a you problem.",
+    "Have you checked your environment variables?",
+  ],
+  vague_concern: [
+    "Something about this feels off.",
+    "I have concerns about the maintainability here.",
+    "This doesn't feel right to me.",
+    "I'm not sure about this approach.",
+    "There's something bothering me about this, but I can't put my finger on it.",
+    "This could be better.",
+    "Not sure this is the right direction.",
+    "I have reservations.",
+    "Let me think about this more.",
+    "This makes me uncomfortable.",
+    "I don't love this.",
+    "Something something separation of concerns.",
+    "What about the architecture?",
+    "This feels like it could cause problems later.",
+    "I'm sensing some code smell here.",
   ],
 };
 

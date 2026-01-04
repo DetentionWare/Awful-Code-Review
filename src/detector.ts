@@ -9,7 +9,7 @@ export const patterns: Record<string, PatternDefinition> = {
   async_await: {
     regex: '\\b(async\\s+function|async\\s*\\(|await\\s+)',
     fileTypes: ['js', 'ts', 'jsx', 'tsx', 'mjs'],
-    triggersPersonas: ['dinosaur', 'overconfident_beginner', 'optimizer'],
+    triggersPersonas: ['dinosaur', 'overconfident_beginner', 'optimizer', 'time_traveler', 'recent_convert', 'security_theater'],
     weight: 0.8,
   },
 
@@ -23,14 +23,14 @@ export const patterns: Record<string, PatternDefinition> = {
   fetch: {
     regex: '\\bfetch\\s*\\(',
     fileTypes: ['js', 'ts', 'jsx', 'tsx'],
-    triggersPersonas: ['dinosaur', 'security_theater'],
-    weight: 0.7,
+    triggersPersonas: ['dinosaur', 'security_theater', 'time_traveler', 'overconfident_beginner', 'optimizer', 'premature_abstractor', 'ai_maximalist'],
+    weight: 0.8,
   },
 
   error_handling: {
     regex: '\\b(try\\s*\\{|catch\\s*\\(|\\.catch\\s*\\()',
     fileTypes: ['js', 'ts', 'jsx', 'tsx', 'py', 'java'],
-    triggersPersonas: ['optimizer', 'chaos_agent', 'security_theater', 'overconfident_beginner'],
+    triggersPersonas: ['optimizer', 'chaos_agent', 'security_theater', 'overconfident_beginner', 'recent_convert', 'documentation_hypocrite', 'ai_maximalist', 'works_on_my_machine', 'dry_absolutist', 'vague_senior'],
     weight: 0.9,
   },
 
@@ -45,7 +45,7 @@ export const patterns: Record<string, PatternDefinition> = {
   react: {
     regex: '(useState|useEffect|useContext|useRef|useMemo|useCallback)',
     fileTypes: ['jsx', 'tsx', 'js', 'ts'],
-    triggersPersonas: ['time_traveler', 'premature_abstractor'],
+    triggersPersonas: ['time_traveler', 'premature_abstractor', 'dinosaur', 'overconfident_beginner', 'recent_convert', 'optimizer', 'security_theater', 'ai_maximalist', 'bikeshedder', 'dry_absolutist', 'vague_senior'],
     weight: 0.8,
   },
 
@@ -83,8 +83,8 @@ export const patterns: Record<string, PatternDefinition> = {
   functions: {
     regex: '(function\\s+\\w+|const\\s+\\w+\\s*=\\s*(async\\s*)?\\([^)]*\\)\\s*=>|def\\s+\\w+\\s*\\()',
     fileTypes: ['js', 'ts', 'jsx', 'tsx', 'py'],
-    triggersPersonas: ['premature_abstractor', 'optimizer', 'documentation_hypocrite'],
-    weight: 0.7,
+    triggersPersonas: ['premature_abstractor', 'optimizer', 'documentation_hypocrite', 'recent_convert', 'overconfident_beginner', 'formatting_pedant', 'bikeshedder', 'dry_absolutist', 'vague_senior'],
+    weight: 0.8,
   },
 
   // Class definitions
@@ -99,8 +99,8 @@ export const patterns: Record<string, PatternDefinition> = {
   loops: {
     regex: '(for\\s*\\(|while\\s*\\(|\\.forEach\\s*\\(|\\.map\\s*\\(|\\.filter\\s*\\()',
     fileTypes: ['js', 'ts', 'jsx', 'tsx', 'py', 'java'],
-    triggersPersonas: ['recent_convert', 'optimizer', 'ai_maximalist'],
-    weight: 0.6,
+    triggersPersonas: ['recent_convert', 'optimizer', 'ai_maximalist', 'dinosaur', 'overconfident_beginner', 'premature_abstractor'],
+    weight: 0.7,
   },
 
   // Conditional patterns
@@ -123,23 +123,23 @@ export const patterns: Record<string, PatternDefinition> = {
   variables: {
     regex: '(const\\s+\\w+|let\\s+\\w+|var\\s+\\w+)',
     fileTypes: ['js', 'ts', 'jsx', 'tsx'],
-    triggersPersonas: ['recent_convert', 'formatting_pedant', 'documentation_hypocrite'],
-    weight: 0.4,
+    triggersPersonas: ['recent_convert', 'formatting_pedant', 'documentation_hypocrite', 'optimizer', 'overconfident_beginner', 'dinosaur', 'bikeshedder', 'dry_absolutist', 'vague_senior'],
+    weight: 0.6,
   },
 
   // Type annotations
   types: {
     regex: '(:\\s*(string|number|boolean|any|unknown)\\b|<[^>]+>)',
     fileTypes: ['ts', 'tsx'],
-    triggersPersonas: ['overconfident_beginner', 'dinosaur'],
+    triggersPersonas: ['overconfident_beginner', 'dinosaur', 'optimizer'],
     weight: 0.5,
   },
 
-  // Whitespace patterns (for pedants)
+  // Whitespace patterns (for pedants and deranged optimizers)
   whitespace: {
     regex: '(  +|\\t)',
     fileTypes: ['*'],
-    triggersPersonas: ['formatting_pedant'],
+    triggersPersonas: ['formatting_pedant', 'optimizer'],
     weight: 0.3,
   },
 
@@ -155,16 +155,16 @@ export const patterns: Record<string, PatternDefinition> = {
   comments: {
     regex: '(\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/|#.*)',
     fileTypes: ['*'],
-    triggersPersonas: ['documentation_hypocrite'],
-    weight: 0.4,
+    triggersPersonas: ['documentation_hypocrite', 'optimizer'],
+    weight: 0.5,
   },
 
-  // Any change (generic triggers)
+  // Any change (generic triggers) - low weight fallback
   any_change: {
     regex: '.',
     fileTypes: ['*'],
     triggersPersonas: ['scope_creep_sage', 'executive', 'ghost_of_managers_past', 'chaotic_neutral'],
-    weight: 0.1,
+    weight: 0.05,
   },
 };
 
@@ -173,6 +173,22 @@ export class PatternDetector {
 
   constructor(customPatterns?: Record<string, PatternDefinition>) {
     this.patterns = { ...patterns, ...customPatterns };
+    this.validatePatterns();
+  }
+
+  /**
+   * Validate all pattern regexes at construction time.
+   * Throws an error if any regex is invalid, making issues visible early.
+   */
+  private validatePatterns(): void {
+    for (const [name, pattern] of Object.entries(this.patterns)) {
+      try {
+        new RegExp(pattern.regex);
+      } catch (e) {
+        const message = e instanceof Error ? e.message : 'Unknown error';
+        throw new Error(`Invalid regex in pattern "${name}": ${pattern.regex} - ${message}`);
+      }
+    }
   }
 
   /**

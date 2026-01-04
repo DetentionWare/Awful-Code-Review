@@ -38,7 +38,11 @@ export type PersonaType =
   | 'chaotic_neutral'
   | 'documentation_hypocrite'
   | 'executive'
-  | 'scope_creep_sage';
+  | 'scope_creep_sage'
+  | 'works_on_my_machine'
+  | 'bikeshedder'
+  | 'dry_absolutist'
+  | 'vague_senior';
 
 export interface PersonaDefinition {
   name: PersonaType;
@@ -149,6 +153,12 @@ export interface ChaosConfig {
     enabled: boolean;
     probability: number;
   };
+  // Probability of adding severity labels to comments
+  severityLabelProbability: number;
+  // Probability of using enthusiastic vs contradictory summary when approving
+  enthusiasticSummaryProbability: number;
+  // Probability threshold for requesting changes when >5 comments
+  requestChangesThreshold: number;
 }
 
 // ============ GitHub Action Inputs ============
