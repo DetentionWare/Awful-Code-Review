@@ -1,0 +1,38 @@
+name: Awful Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+# Use this workflow as an example. Copy to .github/workflows/ in your repo.
+
+jobs:
+  awful-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Awful Code Review
+        uses: your-username/awful-code-review@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # Probability of commenting on any pattern match (0-1)
+          chaos-level: '0.7'
+          
+          # Probability of helpful-but-scope-creeping suggestions
+          helpful-accident-rate: '0.3'
+          
+          # Maximum comments to leave
+          max-comments: '15'
+          
+          # Optional: limit to specific personas
+          # personas: 'security_theater,ai_maximalist,chaotic_neutral'
+          
+          # Set to true to see output without posting
+          dry-run: 'false'

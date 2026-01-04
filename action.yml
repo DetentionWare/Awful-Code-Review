@@ -1,0 +1,52 @@
+name: 'Awful Code Review'
+description: 'A code review bot that embodies the worst coworker you ever had'
+author: 'Chaos Engineering Department'
+
+branding:
+  icon: 'message-circle'
+  color: 'red'
+
+inputs:
+  github-token:
+    description: 'GitHub token for API access'
+    required: true
+    default: ${{ github.token }}
+
+  chaos-level:
+    description: 'Probability of commenting on any given pattern (0-1)'
+    required: false
+    default: '0.7'
+
+  helpful-accident-rate:
+    description: 'Probability of accidentally helpful but scope-creeping comments (0-1)'
+    required: false
+    default: '0.3'
+
+  max-comments:
+    description: 'Maximum number of comments per review'
+    required: false
+    default: '15'
+
+  personas:
+    description: 'Comma-separated list of personas to enable (leave empty for all)'
+    required: false
+    default: ''
+
+  dry-run:
+    description: 'If true, output what would be commented without actually posting'
+    required: false
+    default: 'false'
+
+outputs:
+  review-action:
+    description: 'The review action taken (APPROVE, REQUEST_CHANGES, COMMENT)'
+
+  comment-count:
+    description: 'Number of comments generated'
+
+  dry-run-output:
+    description: 'Full output when running in dry-run mode'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
