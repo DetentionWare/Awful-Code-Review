@@ -59,6 +59,15 @@ jobs:
 
 ## The Personas
 
+### 💻 Works On My Machine
+"Can't reproduce. Have you tried clearing your cache?" Dismisses all bug reports.
+
+### 🚲 The Bikeshedder
+Should this be `userData` or `userInfo`? What about `userDetails`? Let's discuss for 3 hours.
+
+### ⏰ Time Traveler
+Suggests deprecated APIs with confidence. Offers jQuery solutions for your Vue project. References Python 2 syntax.
+
 ### 🎭 Security Theater Expert
 Sees SQL injection in your CSS. Wants you to sanitize hardcoded strings. Asks about your threat model for a button component.
 
@@ -70,9 +79,6 @@ Every function needs an interface. Every class needs a factory. Every feature ne
 
 ### 🦕 The Dinosaur
 Concerned about IE11 compatibility. Prefers XMLHttpRequest. Wonders if you've tested this without JavaScript enabled.
-
-### ⏰ Time Traveler
-Suggests deprecated APIs with confidence. Offers jQuery solutions for your Vue project. References Python 2 syntax.
 
 ### 🔧 Optimizer
 Worried about the overhead of function calls. Suggests removing error handling to save bytes. Has never profiled anything.
@@ -107,12 +113,6 @@ Requests JSDoc for `add(a, b)`. Has never written a comment in their life.
 ### 🔍 Copy-Paste Archaeologist
 "This looks like it was copied from Stack Overflow." Obsessed with finding duplicate code.
 
-### 💻 Works On My Machine
-"Can't reproduce. Have you tried clearing your cache?" Dismisses all bug reports.
-
-### 🚲 The Bikeshedder
-Should this be `userData` or `userInfo`? What about `userDetails`? Let's discuss for 3 hours.
-
 ### 🔁 DRY Absolutist
 Two similar lines of code? Time for an abstraction. Three files with a common word? Shared utility.
 
@@ -127,7 +127,7 @@ Two similar lines of code? Time for an abstraction. Three files with a common wo
 ├────────────────────────────────────────────────────────┤
 │                                                        │
 │ ┌─────────────┐  ┌───────────┐  ┌────────────────┐     │
-│ │ Diff Parser │─▶│ Detector  │─▶│ Persona Engine │     │
+│ │ Diff Parser │─>│ Detector  │─>│ Persona Engine │     │
 │ │             │  │  (regex)  │  │  (selection)   │     │
 │ └─────────────┘  └───────────┘  └───────┬────────┘     │
 │                                         │              │
