@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: your-username/awful-code-review@v1
+      - uses: DetentionWare/Awful-Code-Review@v1.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           chaos-level: '0.7'
@@ -72,7 +72,7 @@ Every function needs an interface. Every class needs a factory. Every feature ne
 Concerned about IE11 compatibility. Prefers XMLHttpRequest. Wonders if you've tested this without JavaScript enabled.
 
 ### ⏰ Time Traveler
-Suggests `componentWillMount` in 2024. Offers jQuery solutions for your Vue project. References Python 2 syntax with confidence.
+Suggests deprecated APIs with confidence. Offers jQuery solutions for your Vue project. References Python 2 syntax.
 
 ### 🔧 Optimizer
 Worried about the overhead of function calls. Suggests removing error handling to save bytes. Has never profiled anything.
@@ -96,10 +96,28 @@ Just came back from a conference. Wants to know the blockchain story. Concerned 
 While you're fixing this button, have you considered implementing a full design system?
 
 ### 😐 Chaotic Neutral
-Approves with "LGTM" then adds 47 blocking comments. Marks conversations resolved without reading them.
+Approves with "LGTM" then adds blocking comments. "Actually, ignore my previous comment."
 
 ### 📖 Documentation Hypocrite
 Requests JSDoc for `add(a, b)`. Has never written a comment in their life.
+
+### 🎓 Overconfident Beginner
+"Best practice is to always..." followed by confidently incorrect advice. Learned it in a tutorial once.
+
+### 🔍 Copy-Paste Archaeologist
+"This looks like it was copied from Stack Overflow." Obsessed with finding duplicate code.
+
+### 💻 Works On My Machine
+"Can't reproduce. Have you tried clearing your cache?" Dismisses all bug reports.
+
+### 🚲 The Bikeshedder
+Should this be `userData` or `userInfo`? What about `userDetails`? Let's discuss for 3 hours.
+
+### 🔁 DRY Absolutist
+Two similar lines of code? Time for an abstraction. Three files with a common word? Shared utility.
+
+### 🤔 The Vague Senior
+"Something about this concerns me." Never specifies what. "I have reservations."
 
 ## Architecture
 
@@ -108,8 +126,8 @@ Requests JSDoc for `add(a, b)`. Has never written a comment in their life.
 │                     AWFUL CODE REVIEW                        │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐  │
-│  │   Parser    │───▶│  Detector   │───▶│ Persona Engine  │  │
-│  │  (diff/AST) │    │  (patterns) │    │   (selection)   │  │
+│  │ Diff Parser │───▶│  Detector   │───▶│ Persona Engine  │  │
+│  │             │    │   (regex)   │    │   (selection)   │  │
 │  └─────────────┘    └─────────────┘    └────────┬────────┘  │
 │                                                  │           │
 │  ┌─────────────────────────────────────────────▼────────┐   │
