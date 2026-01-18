@@ -20,7 +20,7 @@ Awful Code Review is a code review bot that embodies every frustrating code revi
 
 ## Why?
 
-Because laughter is the best debugging tool. Also, catharsis.
+Learn what not to do in PR reviews. Also, catharsis.
 
 ## Installation
 
