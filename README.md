@@ -4,6 +4,8 @@
 
 **Confidently incorrect. Aggressively unhelpful. Occasionally brilliant (by accident).**
 
+> "This function only does one thing. What if it needs to do more things later? (This is a blocker for me)"
+
 ## What is this?
 
 Awful Code Review is a code review bot that embodies every frustrating code reviewer you've ever encountered. It:
